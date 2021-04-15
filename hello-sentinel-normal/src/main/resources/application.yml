@@ -1,0 +1,80 @@
+server:
+  port: 9000
+
+nacos:
+  server-addr: localhost:8848
+sentinel:
+  group-id: SENTINEL_GROUP
+  data-type: json
+
+spring:
+  application:
+    name: hello-sentinel-normal
+  cloud:
+    nacos:
+      discovery:
+        server-addr: ${nacos.server-addr}
+    sentinel:
+      transport:
+        dashboard: localhost:8888
+        port: 8719
+      datasource:
+        #限流规则
+        flow:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-flow-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: flow
+        #降级规则
+        degrade:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-degrade-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: degrade
+        #热点规则
+        param:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-param-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: param_flow
+        #系统规则
+        system:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-system-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: system
+        #授权规则
+        authority:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-auth-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: authority
+      #取消延迟加载
+      eager: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+# rule-type 取值:
+#  AUTHORITY
+#  DEGRADE
+#  FLOW
+#  GW_API_GROUP
+#  GW_FLOW
+#  PARAM_FLOW
+#  SYSTEM

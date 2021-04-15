@@ -1,0 +1,80 @@
+server:
+  port: 9100
+nacos:
+  server-addr: localhost:8848
+sentinel:
+  group-id: SENTINEL_GROUP
+  data-type: json
+
+spring:
+  application:
+    name: hello-sentinel-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          lower-case-service-id: true
+          enabled: true
+      routes:
+        - id: hello-sentinel-normal
+          uri: lb://hello-sentinel-normal
+          predicates:
+            - Path=/normalservice/**
+          filters:
+            - StripPrefix=1
+    nacos:
+      discovery:
+        server-addr: ${nacos.server-addr}
+    sentinel:
+      transport:
+        dashboard: localhost:8888
+        port: 8719
+        #客户端ip，多网卡时多次连接可能识别不同
+      #        client-ip: x.x.x.x
+      datasource:
+        #网关route限流规则
+        gateway-flow:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-gateway-flow
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: gw_flow
+        #网关api纬度限流规则
+        gateway-api:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-gateway-api
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: gw_api_group
+        #降级规则
+        degrade:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-degrade-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: degrade
+        #系统规则
+        system:
+          nacos:
+            server-addr: ${nacos.server-addr}
+            data-id: ${spring.application.name}-system-rules
+            group-id: ${sentinel.group-id}
+            data-type: ${sentinel.data-type}
+            rule-type: system
+      #取消延迟加载
+      eager: true
+
+management: #开启SpringBoot Admin的监控
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+feign:
+  sentinel:
+    enabled: true #开启feign对sentinel的支持
