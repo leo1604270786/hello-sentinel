@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @create 2021/4/9 16:34
  **/
 @SpringBootApplication
-
 public class HelloSentinelGateway {
     public static void main(String[] args) {
         //设置为网关类型

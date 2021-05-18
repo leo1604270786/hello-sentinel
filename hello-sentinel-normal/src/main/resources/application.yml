@@ -61,6 +61,8 @@ spring:
             rule-type: authority
       #取消延迟加载
       eager: true
+      filter:
+        url-patterns: /**
 
 management:
   endpoints:

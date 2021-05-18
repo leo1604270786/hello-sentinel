@@ -14,17 +14,16 @@ import java.util.Random;
  * @create 2021/1/27 16:25
  **/
 @RestController
-@RequestMapping("hello")
 public class HelloController {
 
-//    @SentinelResource(value = "hello", fallback = "sentinelFallback")
-    @GetMapping("sentinel")
+    @SentinelResource(value = "hello", fallback = "sentinelFallback")
+    @GetMapping("/hello/sentinel")
     public String sentinel(){
         return "hello sentinel";
     }
 
 //    @SentinelResource(value = "degrade", fallback = "sentinelFallback")
-    @GetMapping("degrade")
+    @GetMapping("/hello/degrade")
     public String degrade(){
         //测试降级
         if(new Random().nextInt() % 2 == 0) {
